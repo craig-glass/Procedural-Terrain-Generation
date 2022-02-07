@@ -24,12 +24,20 @@ public class CustomTerrainEditor : Editor
     GUITableState perlinParameterTable;
     SerializedProperty perlinParameters;
 
+    SerializedProperty fallOff;
+    SerializedProperty dropOff;
+    SerializedProperty peakCount;
+    SerializedProperty minHeight;
+    SerializedProperty maxHeight;
+    SerializedProperty voronoiType;
+
 
     // fold outs ----------
     bool showRandom = false;
     bool showLoadheights = false;
     bool showPerlin = false;
     bool showMultiplePerlin = false;
+    bool showVoronoiTessellation = false;
 
     private void OnEnable()
     {
@@ -49,6 +57,13 @@ public class CustomTerrainEditor : Editor
 
         perlinParameterTable = new GUITableState("perlinParameterTable");
         perlinParameters = serializedObject.FindProperty("perlinParameters");
+
+        fallOff = serializedObject.FindProperty("fallOff");
+        dropOff = serializedObject.FindProperty("dropOff");
+        peakCount = serializedObject.FindProperty("peakCount");
+        minHeight = serializedObject.FindProperty("minHeight");
+        maxHeight = serializedObject.FindProperty("maxHeight");
+        voronoiType = serializedObject.FindProperty("voronoiType");
     }
     public override void OnInspectorGUI()
     {
@@ -129,6 +144,25 @@ public class CustomTerrainEditor : Editor
             if (GUILayout.Button("Apply Multiple Perlin"))
             {
                 terrain.MultiplePerlinTerrain();
+            }
+        }
+
+        // Voronoi Tessellation
+        showVoronoiTessellation = EditorGUILayout.Foldout(showVoronoiTessellation, "Voronoi Tessellation");
+        if (showVoronoiTessellation)
+        {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Set Voronoi Parameters", EditorStyles.boldLabel);
+            EditorGUILayout.IntSlider(peakCount, 1, 10, new GUIContent("Peak Count"));
+            EditorGUILayout.Slider(fallOff, 0, 10, new GUIContent("Falloff"));
+            EditorGUILayout.Slider(dropOff, 0, 10, new GUIContent("Dropoff"));
+            EditorGUILayout.Slider(minHeight, 0, 1, new GUIContent("Min Height"));
+            EditorGUILayout.Slider(maxHeight, 0, 1, new GUIContent("Max Height"));
+            EditorGUILayout.PropertyField(voronoiType);
+
+            if (GUILayout.Button("Add Voronoi"))
+            {
+                terrain.VoronoiTessellation();
             }
         }
 
