@@ -34,6 +34,14 @@ public class CustomTerrainEditor : Editor
     
     SerializedProperty roughness;
     SerializedProperty heightDampenerPower;
+    SerializedProperty smoothAmount;
+
+    GUITableState splatMapTable;
+    SerializedProperty splatHeights;
+    SerializedProperty splatPerlinXScale;
+    SerializedProperty splatPerlinYScale;
+    SerializedProperty splatPerlinBlendAmount;
+    SerializedProperty splatOffset;
 
 
     // fold outs ----------
@@ -44,6 +52,7 @@ public class CustomTerrainEditor : Editor
     bool showVoronoiTessellation = false;
     bool showMidPointDisplacement = false;
     bool showSmoothTerrain = false;
+    bool showSplatmaps = false;
 
     private void OnEnable()
     {
@@ -73,7 +82,16 @@ public class CustomTerrainEditor : Editor
 
         roughness = serializedObject.FindProperty("roughness");
         heightDampenerPower = serializedObject.FindProperty("heightDampenerPower");
+        smoothAmount = serializedObject.FindProperty("smoothAmount");
+
+        splatMapTable = new GUITableState("splatMapTable");
+        splatHeights = serializedObject.FindProperty("splatHeights");
+        splatPerlinXScale = serializedObject.FindProperty("splatPerlinXScale");
+        splatPerlinYScale = serializedObject.FindProperty("splatPerlinYScale");
+        splatPerlinBlendAmount = serializedObject.FindProperty("splatPerlinBlendAmount");
+        splatOffset = serializedObject.FindProperty("splatOffset");
     }
+
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -116,13 +134,13 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Label("Add perlin noise to heights", EditorStyles.boldLabel);
 
-            EditorGUILayout.Slider(perlinXScale, 0, 0.01f, new GUIContent("X Scale"));
-            EditorGUILayout.Slider(perlinYScale, 0, 0.01f, new GUIContent("Y Scale"));
+            EditorGUILayout.Slider(perlinXScale, 0f, 0.01f, new GUIContent("X Scale"));
+            EditorGUILayout.Slider(perlinYScale, 0f, 0.01f, new GUIContent("Y Scale"));
             EditorGUILayout.IntSlider(perlinXOffset, 0, 10000, new GUIContent("X Offset"));
             EditorGUILayout.IntSlider(perlinYOffset, 0, 10000, new GUIContent("Y Offset"));
 
             EditorGUILayout.IntSlider(perlinOctaves, 1, 10, new GUIContent("Octaves"));
-            EditorGUILayout.Slider(perlinPersistance, 1, 10, new GUIContent("Persistance"));
+            EditorGUILayout.Slider(perlinPersistance, -5, 10, new GUIContent("Persistance"));
             EditorGUILayout.Slider(perlinHeightScale, 0, 1, new GUIContent("Height Scale"));
 
             if (GUILayout.Button("Add Perlin"))
@@ -196,10 +214,45 @@ public class CustomTerrainEditor : Editor
         {
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Label("Smooth Terrain", EditorStyles.boldLabel);
+            EditorGUILayout.IntSlider(smoothAmount, 1, 50, new GUIContent("Smooth Terrain"));
 
             if (GUILayout.Button("Smooth Terrian"))
             {
                 terrain.SmoothTerrain();
+            }
+        }
+
+        // Splatmaps
+        showSplatmaps = EditorGUILayout.Foldout(showSplatmaps, "Splatmaps");
+        if (showSplatmaps)
+        {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Splatmaps", EditorStyles.boldLabel);
+
+            splatMapTable = GUITableLayout.DrawTable(splatMapTable, serializedObject.FindProperty("splatHeights"));
+
+            GUILayout.Space(20);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("+"))
+            {
+                terrain.AddNewSplatHeight();
+            }
+            if (GUILayout.Button("-"))
+            {
+                terrain.RemoveSplatHeight();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            GUILayout.Label("Perlin Parameters", EditorStyles.boldLabel);
+
+            EditorGUILayout.Slider(splatPerlinXScale, 0.01f, 0.1f, new GUIContent("X Scale"));
+            EditorGUILayout.Slider(splatPerlinYScale, 0.01f, 0.1f, new GUIContent("Y Scale"));
+            EditorGUILayout.Slider(splatOffset, 0.001f, 0.1f, new GUIContent("Offset"));
+            EditorGUILayout.Slider(splatPerlinBlendAmount, 0.01f, 0.5f, new GUIContent("Blend Amount"));
+            if (GUILayout.Button("Apply SplatMaps"))
+            {
+                terrain.SplatMaps();
             }
         }
 

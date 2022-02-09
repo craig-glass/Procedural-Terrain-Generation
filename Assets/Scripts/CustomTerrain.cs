@@ -38,6 +38,8 @@ public class CustomTerrain : MonoBehaviour
     public float roughness = 2.0f;
     public float heightDampenerPower = 2.0f;
 
+    public int smoothAmount = 1;
+
     // Multiple Perlin
     [System.Serializable]
     public class PerlinParameters
@@ -55,6 +57,30 @@ public class CustomTerrain : MonoBehaviour
     public List<PerlinParameters> perlinParameters = new List<PerlinParameters>()
     {
         new PerlinParameters()
+    };
+
+    // Splatmaps
+    [System.Serializable]
+    public class SplatHeights
+    {
+
+        public Texture2D texture = null;
+        public float minSlope = 0;
+        public float maxSlope = 1.5f;
+        public Vector2 tileOffset = new Vector2(0, 0);
+        public Vector2 tileSize = new Vector2(50.0f, 50.0f);
+        public float minHeight = 0.1f;
+        public float maxHeight = 0.2f;
+        public bool remove = false;
+    }
+    public float splatPerlinXScale = 0.01f;
+    public float splatPerlinYScale = 0.01f;
+    public float splatPerlinBlendAmount = 0.2f;
+    public float splatOffset = 0.01f;
+
+    public List<SplatHeights> splatHeights = new List<SplatHeights>()
+    {
+        new SplatHeights()
     };
 
 
@@ -167,63 +193,72 @@ public class CustomTerrain : MonoBehaviour
 
     public void SmoothTerrain()
     {
-        float[,] heightMap = GetHeightMap();
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapResolution, terrainData.heightmapResolution);
+        float smoothProgress = 0;
+        EditorUtility.DisplayProgressBar("Smoothing Terrain", "Progress", smoothProgress);
 
-        for (int y = 0; y < terrainData.heightmapResolution; y++)
+        for (int i = 0; i < smoothAmount; i++)
         {
-            for (int x = 0; x < terrainData.heightmapResolution; x++)
+            for (int y = 0; y < terrainData.heightmapResolution; y++)
             {
-                float averageHeight = 0;
+                for (int x = 0; x < terrainData.heightmapResolution; x++)
+                {
+                    float averageHeight = 0;
 
-                if (y == 0 && x > 0 && x < terrainData.heightmapResolution - 2)
-                {
-                    averageHeight = (
-                        heightMap[x, y] +
-                        heightMap[x + 1, y] +
-                        heightMap[x - 1, y] +
-                        heightMap[x + 1, y + 1] +
-                        heightMap[x - 1, y + 1] +
-                        heightMap[x, y + 1]) / 6.0f;
-                }
+                    if (y == 0 && x > 0 && x < terrainData.heightmapResolution - 2)
+                    {
+                        averageHeight = (
+                            heightMap[x, y] +
+                            heightMap[x + 1, y] +
+                            heightMap[x - 1, y] +
+                            heightMap[x + 1, y + 1] +
+                            heightMap[x - 1, y + 1] +
+                            heightMap[x, y + 1]) / 6.0f;
+                    }
 
-                else if (x == 0 && y > 0 && y < terrainData.heightmapResolution - 2)
-                {
-                    averageHeight = (
-                        heightMap[x, y] +
-                        heightMap[x + 1, y] +
-                        heightMap[x + 1, y + 1] +
-                        heightMap[x + 1, y - 1] +
-                        heightMap[x, y + 1] +
-                        heightMap[x, y - 1]) / 6.0f;
-                }
-                else if (x == terrainData.heightmapResolution - 2 && y > terrainData.heightmapResolution - 2 && y < 0)
-                {
-                    averageHeight = (
-                        heightMap[x, y] +
-                        heightMap[x - 1, y] +
-                        heightMap[x - 1, y + 1] +
-                        heightMap[x - 1, y - 1] +
-                        heightMap[x, y + 1] +
-                        heightMap[x, y - 1]) / 6.0f;
-                }
-                else if (y > 0 && x > 0 && y < terrainData.heightmapResolution - 2 && x < terrainData.heightmapResolution - 2)
-                {
-                    averageHeight = (
-                        heightMap[x, y] +
-                        heightMap[x + 1, y] +
-                        heightMap[x - 1, y] +
-                        heightMap[x + 1, y + 1] +
-                        heightMap[x - 1, y - 1] +
-                        heightMap[x + 1, y - 1] +
-                        heightMap[x - 1, y + 1] +
-                        heightMap[x, y - 1] +
-                        heightMap[x, y + 1]) / 9.0f;
-                }
+                    else if (x == 0 && y > 0 && y < terrainData.heightmapResolution - 2)
+                    {
+                        averageHeight = (
+                            heightMap[x, y] +
+                            heightMap[x + 1, y] +
+                            heightMap[x + 1, y + 1] +
+                            heightMap[x + 1, y - 1] +
+                            heightMap[x, y + 1] +
+                            heightMap[x, y - 1]) / 6.0f;
+                    }
+                    else if (x == terrainData.heightmapResolution - 2 && y > terrainData.heightmapResolution - 2 && y < 0)
+                    {
+                        averageHeight = (
+                            heightMap[x, y] +
+                            heightMap[x - 1, y] +
+                            heightMap[x - 1, y + 1] +
+                            heightMap[x - 1, y - 1] +
+                            heightMap[x, y + 1] +
+                            heightMap[x, y - 1]) / 6.0f;
+                    }
+                    else if (y > 0 && x > 0 && y < terrainData.heightmapResolution - 2 && x < terrainData.heightmapResolution - 2)
+                    {
+                        averageHeight = (
+                            heightMap[x, y] +
+                            heightMap[x + 1, y] +
+                            heightMap[x - 1, y] +
+                            heightMap[x + 1, y + 1] +
+                            heightMap[x - 1, y - 1] +
+                            heightMap[x + 1, y - 1] +
+                            heightMap[x - 1, y + 1] +
+                            heightMap[x, y - 1] +
+                            heightMap[x, y + 1]) / 9.0f;
+                    }
 
-                heightMap[x, y] = averageHeight;
+                    heightMap[x, y] = averageHeight;
+                }
             }
+            smoothProgress++;
+            EditorUtility.DisplayProgressBar("Smoothing Terrain", "Progress", smoothProgress / smoothAmount);
         }
+        
         terrainData.SetHeights(0, 0, heightMap);
+        EditorUtility.ClearProgressBar();
     }
 
     public void VoronoiTessellation()
@@ -338,6 +373,113 @@ public class CustomTerrain : MonoBehaviour
             keptPerlinParameters.Add(perlinParameters[0]);
         }
         perlinParameters = keptPerlinParameters;
+    }
+
+    float GetSteepness(float[,] heightmap, int x, int y, int width, int height)
+    {
+        float h = heightmap[x, y];
+        int nx = x + 1;
+        int ny = y + 1;
+
+        // if on the upper edge of the map find gradient by going backward
+        if (nx > width - 1) nx = x - 1;
+        if (ny > height - 1) ny = y - 1;
+
+        float dx = heightmap[nx, y] - h;
+        float dy = heightmap[x, ny] - h;
+        Vector2 gradient = new Vector2(dx, dy);
+
+        float steep = gradient.magnitude;
+
+        return steep;
+    }
+
+    public void SplatMaps()
+    {
+        TerrainLayer[] newSplatPrototypes;
+        newSplatPrototypes = new TerrainLayer[splatHeights.Count];
+        int spindex = 0;
+        foreach (SplatHeights sh in splatHeights)
+        {
+            newSplatPrototypes[spindex] = new TerrainLayer();
+            newSplatPrototypes[spindex].diffuseTexture = sh.texture;
+            newSplatPrototypes[spindex].tileOffset = sh.tileOffset;
+            newSplatPrototypes[spindex].tileSize = sh.tileSize;
+            newSplatPrototypes[spindex].diffuseTexture.Apply(true);
+
+            string path = "Assets/New Terrain Layer " + spindex + ".terrainlayer";
+            AssetDatabase.CreateAsset(newSplatPrototypes[spindex], path);
+            spindex++;
+            Selection.activeObject = this.gameObject;
+        }
+        terrainData.terrainLayers = newSplatPrototypes;
+
+        float[,] heightMap = terrainData.GetHeights(0, 0, terrainData.heightmapResolution, terrainData.heightmapResolution);
+        float[,,] splatmapData = new float[terrainData.alphamapWidth, terrainData.alphamapHeight, terrainData.alphamapLayers];
+
+        for (int y = 0; y < terrainData.alphamapHeight; y++)
+        {
+            for (int x = 0; x < terrainData.alphamapWidth; x++)
+            {
+                float[] splat = new float[terrainData.alphamapLayers];
+                for (int i = 0; i < splatHeights.Count; i++)
+                {
+                    float noise = Mathf.PerlinNoise(x * splatPerlinXScale, y * splatPerlinYScale) * splatPerlinBlendAmount;
+                    float offset = splatOffset + noise;
+                    float thisHeightStart = splatHeights[i].minHeight - offset;
+                    float thisHeightStop = splatHeights[i].maxHeight + offset;
+                    float steepness = GetSteepness(heightMap, x, y, terrainData.heightmapResolution, terrainData.heightmapResolution);
+
+                    if ((heightMap[x, y] >= thisHeightStart && heightMap[x, y] <= thisHeightStop) &&
+                        (steepness >= splatHeights[i].minSlope && steepness <= splatHeights[i].maxSlope))
+                    {
+                        splat[i] = 1;
+                    }
+                }
+                NormalizeVector(splat);
+                for (int j = 0; j < splatHeights.Count; j++)
+                {
+                    splatmapData[x, y, j] = splat[j];
+                }
+            }
+        }
+        terrainData.SetAlphamaps(0, 0, splatmapData);
+    }
+
+    void NormalizeVector(float[] v)
+    {
+        float total = 0;
+        for (int i = 0; i < v.Length; i++)
+        {
+            total += v[i];
+        }
+
+        for (int i = 0; i < v.Length; i++)
+        {
+            v[i] /= total;
+        }
+    }
+
+    public void AddNewSplatHeight()
+    {
+        splatHeights.Add(new SplatHeights());
+    }
+
+    public void RemoveSplatHeight()
+    {
+        List<SplatHeights> keptSplatHeights = new List<SplatHeights>();
+        for (int i = 0; i < splatHeights.Count; i++)
+        {
+            if (!splatHeights[i].remove)
+            {
+                keptSplatHeights.Add(splatHeights[i]);
+            }
+        }
+        if (keptSplatHeights.Count == 0)
+        {
+            keptSplatHeights.Add(splatHeights[0]);
+        }
+        splatHeights = keptSplatHeights;
     }
 
     public void LoadTexture()

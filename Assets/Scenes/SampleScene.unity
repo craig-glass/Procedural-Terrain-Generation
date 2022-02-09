@@ -311,27 +311,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3402c32dbaf3fe54599fffdbca1a71a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  randomHeightRange: {x: 0.06, y: 0.13}
+  randomHeightRange: {x: -0.78, y: -0.2}
   terrain: {fileID: 626829574}
   terrainData: {fileID: 15600000, guid: 8a763d2646d88354cb0fb03bc939f856, type: 2}
   heightMapImage: {fileID: 2800000, guid: edfb011c865fafd418d140817ab787a0, type: 3}
   heightMapScale: {x: 1, y: 0.4, z: 1}
   resetTerrain: 0
-  perlinXScale: 0.0058
-  perlinYScale: 0.00656
+  perlinXScale: 0.00582
+  perlinYScale: 0.00571
   perlinXOffset: 2646
   perlinYOffset: 0
-  perlinOctaves: 2
-  perlinPersistance: 3.62
-  perlinHeightScale: 0.116
+  perlinOctaves: 3
+  perlinPersistance: -5
+  perlinHeightScale: 0.08
   fallOff: 3.04
   dropOff: 1.21
   peakCount: 10
   minHeight: 0
   maxHeight: 0.87
   voronoiType: 1
-  roughness: 2
-  heightDampenerPower: 1.8
+  roughness: 2.17
+  heightDampenerPower: 2.51
+  smoothAmount: 50
   perlinParameters:
   - mPerlinXScale: 0.006
     mPerlinYScale: 0.006
@@ -348,6 +349,43 @@ MonoBehaviour:
     mPerlinHeightScale: 0.5
     mPerlinOffsetX: 2
     mPerlinOffsetY: 2
+    remove: 0
+  splatPerlinXScale: 0.0859
+  splatPerlinYScale: 0.0845
+  splatPerlinBlendAmount: 0.295
+  splatOffset: 0.0061
+  splatHeights:
+  - texture: {fileID: 2800000, guid: 1368cbe84e5ef458787070c6ea7ae2ee, type: 3}
+    minSlope: 0
+    maxSlope: 0.002
+    tileOffset: {x: 0, y: 0}
+    tileSize: {x: 50, y: 50}
+    minHeight: 0
+    maxHeight: 0.5
+    remove: 0
+  - texture: {fileID: 2800000, guid: dc5e2701b82d34a9ab7da0717fe07076, type: 3}
+    minSlope: 0.01
+    maxSlope: 0.1
+    tileOffset: {x: 0, y: 0}
+    tileSize: {x: 50, y: 50}
+    minHeight: 0.4
+    maxHeight: 0.6
+    remove: 0
+  - texture: {fileID: 2800000, guid: fa749c6a04ad34af5af35082813d7df8, type: 3}
+    minSlope: 0
+    maxSlope: 0.1
+    tileOffset: {x: 0, y: 0}
+    tileSize: {x: 50, y: 50}
+    minHeight: 0.6
+    maxHeight: 1
+    remove: 0
+  - texture: {fileID: 2800000, guid: cf232666bd1f04c1a8a5a7f71eb60617, type: 3}
+    minSlope: 0.001
+    maxSlope: 1.5
+    tileOffset: {x: 0, y: 0}
+    tileSize: {x: 50, y: 50}
+    minHeight: 0
+    maxHeight: 0.8
     remove: 0
 --- !u!1 &705507993
 GameObject:
