@@ -31,6 +31,10 @@ public class CustomTerrainEditor : Editor
     SerializedProperty maxHeight;
     SerializedProperty voronoiType;
 
+    
+    SerializedProperty roughness;
+    SerializedProperty heightDampenerPower;
+
 
     // fold outs ----------
     bool showRandom = false;
@@ -38,6 +42,8 @@ public class CustomTerrainEditor : Editor
     bool showPerlin = false;
     bool showMultiplePerlin = false;
     bool showVoronoiTessellation = false;
+    bool showMidPointDisplacement = false;
+    bool showSmoothTerrain = false;
 
     private void OnEnable()
     {
@@ -64,6 +70,9 @@ public class CustomTerrainEditor : Editor
         minHeight = serializedObject.FindProperty("minHeight");
         maxHeight = serializedObject.FindProperty("maxHeight");
         voronoiType = serializedObject.FindProperty("voronoiType");
+
+        roughness = serializedObject.FindProperty("roughness");
+        heightDampenerPower = serializedObject.FindProperty("heightDampenerPower");
     }
     public override void OnInspectorGUI()
     {
@@ -163,6 +172,34 @@ public class CustomTerrainEditor : Editor
             if (GUILayout.Button("Add Voronoi"))
             {
                 terrain.VoronoiTessellation();
+            }
+        }
+
+        // Midpoint Displacement
+        showMidPointDisplacement = EditorGUILayout.Foldout(showMidPointDisplacement, "Midpoint Displacement");
+        if (showMidPointDisplacement)
+        {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Midpoint Displacement", EditorStyles.boldLabel);
+            EditorGUILayout.Slider(roughness, 0f, 10f, new GUIContent("Roughness"));
+            EditorGUILayout.Slider(heightDampenerPower, 0f, 10f, new GUIContent("Height Dampener Power"));
+
+            if (GUILayout.Button("Add Midpoint Displacement"))
+            {
+                terrain.MidPointDisplacement();
+            }
+        }
+
+        // Smooth Terrain
+        showSmoothTerrain = EditorGUILayout.Foldout(showSmoothTerrain, "Smooth Terrain");
+        if (showSmoothTerrain)
+        {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            GUILayout.Label("Smooth Terrain", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("Smooth Terrian"))
+            {
+                terrain.SmoothTerrain();
             }
         }
 

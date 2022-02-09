@@ -34,6 +34,10 @@ public class CustomTerrain : MonoBehaviour
     public enum VoronoiType { Linear = 0, Power = 1, Combined = 2, Sinewave = 3 };
     public VoronoiType voronoiType = VoronoiType.Combined;
 
+    // Mid Point Displacement
+    public float roughness = 2.0f;
+    public float heightDampenerPower = 2.0f;
+
     // Multiple Perlin
     [System.Serializable]
     public class PerlinParameters
@@ -65,6 +69,161 @@ public class CustomTerrain : MonoBehaviour
         {
             return new float[terrainData.heightmapResolution, terrainData.heightmapResolution];
         }
+    }
+
+    public void MidPointDisplacement()
+    {
+        float[,] heightMap = GetHeightMap();
+        int width = terrainData.heightmapResolution - 1;
+        int squareSize = width;
+        float height = (float)squareSize / 2.0f * 0.01f;
+        
+        float heightDampener = (float)Mathf.Pow(heightDampenerPower, -1 * roughness);
+
+        int cornerX, cornerY;
+        int midX, midY;
+        int pmidXL, pmidXR, pmidYU, pmidYD;
+
+        //heightMap[0, 0] = UnityEngine.Random.Range(0f, 0.2f);
+        //heightMap[0, terrainData.heightmapResolution - 2] = UnityEngine.Random.Range(0f, 0.2f);
+        //heightMap[terrainData.heightmapResolution - 2, 0] = UnityEngine.Random.Range(0f, 0.2f);
+        //heightMap[terrainData.heightmapResolution - 2, terrainData.heightmapResolution - 2] = UnityEngine.Random.Range(0f, 0.2f);
+
+        while (squareSize > 0)
+        {
+            for (int x = 0; x < width; x += squareSize)
+            {
+                for (int y = 0; y < width; y += squareSize)
+                {
+                    cornerX = (x + squareSize);
+                    cornerY = (y + squareSize);
+
+                    midX = (int)(x + squareSize / 2.0f);
+                    midY = (int)(y + squareSize / 2.0f);
+
+                    heightMap[midX, midY] = (float)(
+                        (heightMap[x, y] +
+                        heightMap[cornerX, y] +
+                        heightMap[x, cornerY] +
+                        heightMap[cornerX, cornerY]) / 4.0f +
+                        UnityEngine.Random.Range(-height, height));
+                }
+            }
+            
+            for (int x = 0; x < width; x += squareSize)
+            {
+                for (int y = 0; y < width; y += squareSize)
+                {
+                    cornerX = (x + squareSize);
+                    cornerY = (y + squareSize);
+
+                    midX = (int)(x + squareSize / 2.0f);
+                    midY = (int)(y + squareSize / 2.0f);
+
+                    pmidXR = (int)(midX + squareSize);
+                    pmidYU = (int)(midY + squareSize);
+                    pmidXL = (int)(midX - squareSize);
+                    pmidYD = (int)(midY - squareSize);
+
+                    if (pmidXL <= 0 || pmidYD <= 0 || pmidXR >= width - 1 || pmidYU >= width - 1) continue;
+
+                    heightMap[midX, y] = (float)(
+                        (heightMap[midX, midY] +
+                        heightMap[x, y] +
+                        heightMap[midX, pmidYD] +
+                        heightMap[cornerX, y]) / 4.0f +
+                        UnityEngine.Random.Range(-height, height));
+
+                    heightMap[x, midY] = (float)(
+                        (heightMap[x, cornerY] +
+                        heightMap[midX, midY] +
+                        heightMap[x, y] +
+                        heightMap[pmidXL, midY]) / 4.0f +
+                        UnityEngine.Random.Range(-height, height));
+
+                    heightMap[midX, cornerY] = (float)(
+                        (heightMap[midX, pmidYU] +
+                        heightMap[cornerX, cornerY] +
+                        heightMap[midX, midY] +
+                        heightMap[x, cornerY]) / 4.0f +
+                        UnityEngine.Random.Range(-height, height));
+
+                    heightMap[cornerX, midY] = (float)(
+                        (heightMap[cornerX, cornerY] +
+                        heightMap[pmidXR, midY] +
+                        heightMap[cornerX, y] +
+                        heightMap[midX, midY]) / 4.0f +
+                        UnityEngine.Random.Range(-height, height));
+                }
+            }
+
+            squareSize = (int)(squareSize / 2.0f);
+            height *= heightDampener;
+        }
+       
+
+        terrainData.SetHeights(0, 0, heightMap);
+    }
+
+    public void SmoothTerrain()
+    {
+        float[,] heightMap = GetHeightMap();
+
+        for (int y = 0; y < terrainData.heightmapResolution; y++)
+        {
+            for (int x = 0; x < terrainData.heightmapResolution; x++)
+            {
+                float averageHeight = 0;
+
+                if (y == 0 && x > 0 && x < terrainData.heightmapResolution - 2)
+                {
+                    averageHeight = (
+                        heightMap[x, y] +
+                        heightMap[x + 1, y] +
+                        heightMap[x - 1, y] +
+                        heightMap[x + 1, y + 1] +
+                        heightMap[x - 1, y + 1] +
+                        heightMap[x, y + 1]) / 6.0f;
+                }
+
+                else if (x == 0 && y > 0 && y < terrainData.heightmapResolution - 2)
+                {
+                    averageHeight = (
+                        heightMap[x, y] +
+                        heightMap[x + 1, y] +
+                        heightMap[x + 1, y + 1] +
+                        heightMap[x + 1, y - 1] +
+                        heightMap[x, y + 1] +
+                        heightMap[x, y - 1]) / 6.0f;
+                }
+                else if (x == terrainData.heightmapResolution - 2 && y > terrainData.heightmapResolution - 2 && y < 0)
+                {
+                    averageHeight = (
+                        heightMap[x, y] +
+                        heightMap[x - 1, y] +
+                        heightMap[x - 1, y + 1] +
+                        heightMap[x - 1, y - 1] +
+                        heightMap[x, y + 1] +
+                        heightMap[x, y - 1]) / 6.0f;
+                }
+                else if (y > 0 && x > 0 && y < terrainData.heightmapResolution - 2 && x < terrainData.heightmapResolution - 2)
+                {
+                    averageHeight = (
+                        heightMap[x, y] +
+                        heightMap[x + 1, y] +
+                        heightMap[x - 1, y] +
+                        heightMap[x + 1, y + 1] +
+                        heightMap[x - 1, y - 1] +
+                        heightMap[x + 1, y - 1] +
+                        heightMap[x - 1, y + 1] +
+                        heightMap[x, y - 1] +
+                        heightMap[x, y + 1]) / 9.0f;
+                }
+
+                heightMap[x, y] = averageHeight;
+            }
+        }
+        terrainData.SetHeights(0, 0, heightMap);
     }
 
     public void VoronoiTessellation()
