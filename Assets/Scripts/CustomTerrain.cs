@@ -87,14 +87,14 @@ public class CustomTerrain : MonoBehaviour
     [System.Serializable]
     public class Vegetation
     {
-        public GameObject go = null;
+        public GameObject mesh = null;
         public float minHeight = 0;
         public float maxHeight = 1;
         public float minSlope = 0;
-        public float maxSlope = 1.5f;
+        public float maxSlope = 90f;
         public bool remove = false;
     }
-    public int maxTrees = 100;
+    public int maxTrees = 1000;
     public int treeSpacing = 5;
 
     public List<Vegetation> vegetation = new List<Vegetation>()
@@ -499,6 +499,56 @@ public class CustomTerrain : MonoBehaviour
             keptSplatHeights.Add(splatHeights[0]);
         }
         splatHeights = keptSplatHeights;
+    }
+
+    public void PlantVegetation()
+    {
+        TreePrototype[] newTreePrototypes;
+        newTreePrototypes = new TreePrototype[vegetation.Count];
+        int tindex = 0;
+        foreach (Vegetation v in vegetation)
+        {
+            newTreePrototypes[tindex] = new TreePrototype();
+            newTreePrototypes[tindex].prefab = v.mesh;
+            tindex++;
+        }
+        terrainData.treePrototypes = newTreePrototypes;
+
+        List<TreeInstance> allVegetation = new List<TreeInstance>();
+
+        for (int z = 0; z < terrainData.size.z; z += treeSpacing)
+        {
+            for (int x = 0; x < terrainData.size.x; x += treeSpacing)
+            {
+                for (int tp = 0; tp < terrainData.treePrototypes.Length; tp++)
+                {
+                    float thisHeight = terrainData.GetHeight(x, z) / terrainData.size.y;
+                    float thisHeightStart = vegetation[tp].minHeight;
+                    float thisHeightEnd = vegetation[tp].maxHeight;
+
+                    if (thisHeight >= thisHeightStart && thisHeight <= thisHeightEnd)
+                    {
+                        TreeInstance instance = new TreeInstance();
+                        instance.position = new Vector3((x + UnityEngine.Random.Range(-5.0f, 5.0f)) / terrainData.heightmapResolution,
+                            terrainData.GetHeight(x,z) / terrainData.size.y,
+                            (z + UnityEngine.Random.Range(-5.0f, 5.0f)) / terrainData.heightmapResolution);
+
+                        instance.rotation = UnityEngine.Random.Range(0, 360);
+                        instance.prototypeIndex = tp;
+                        instance.color = Color.white;
+                        instance.lightmapColor = Color.white;
+                        instance.heightScale = 0.95f;
+                        instance.widthScale = 0.95f;
+
+                        allVegetation.Add(instance);
+                        if (allVegetation.Count >= maxTrees) goto TREESDONE;
+                    }
+                    
+                }
+            }
+        }
+    TREESDONE:
+        terrainData.treeInstances = allVegetation.ToArray();
     }
 
     public void AddNewVegetation()

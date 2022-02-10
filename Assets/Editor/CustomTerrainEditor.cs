@@ -305,7 +305,7 @@ public class CustomTerrainEditor : Editor
 
             if (GUILayout.Button("Apply Vegetation"))
             {
-
+                terrain.PlantVegetation();
             }
 
             GUILayout.EndHorizontal();

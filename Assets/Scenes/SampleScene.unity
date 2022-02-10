@@ -232,9 +232,9 @@ GameObject:
   - component: {fileID: 626829574}
   - component: {fileID: 626829573}
   - component: {fileID: 626829576}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Terrain
-  m_TagString: Untagged
+  m_TagString: Terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -361,7 +361,7 @@ MonoBehaviour:
     tileOffset: {x: 0, y: 0}
     tileSize: {x: 50, y: 50}
     minHeight: 0
-    maxHeight: 0.7
+    maxHeight: 1
     remove: 0
   - texture: {fileID: 2800000, guid: cf232666bd1f04c1a8a5a7f71eb60617, type: 3}
     minSlope: 0.003
@@ -369,16 +369,22 @@ MonoBehaviour:
     tileOffset: {x: 0, y: 0}
     tileSize: {x: 50, y: 50}
     minHeight: 0
-    maxHeight: 0.8
+    maxHeight: 1
     remove: 0
-  maxTrees: 1153
-  treeSpacing: 4
+  maxTrees: 2268
+  treeSpacing: 20
   vegetation:
-  - go: {fileID: 0}
+  - mesh: {fileID: 100000, guid: 02e48269f8d554fbca75435761452392, type: 3}
     minHeight: 0
+    maxHeight: 0.3
+    minSlope: 0
+    maxSlope: 20
+    remove: 0
+  - mesh: {fileID: -927199367670048503, guid: 8c7d35afbd119bca11002b7b44295342, type: 3}
+    minHeight: 0.2
     maxHeight: 1
     minSlope: 0
-    maxSlope: 1.5
+    maxSlope: 20
     remove: 0
 --- !u!1 &705507993
 GameObject:
