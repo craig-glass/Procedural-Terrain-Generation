@@ -83,6 +83,25 @@ public class CustomTerrain : MonoBehaviour
         new SplatHeights()
     };
 
+    // Vegetation
+    [System.Serializable]
+    public class Vegetation
+    {
+        public GameObject go = null;
+        public float minHeight = 0;
+        public float maxHeight = 1;
+        public float minSlope = 0;
+        public float maxSlope = 1.5f;
+        public bool remove = false;
+    }
+    public int maxTrees = 100;
+    public int treeSpacing = 5;
+
+    public List<Vegetation> vegetation = new List<Vegetation>()
+    {
+        new Vegetation()
+    };
+
 
     float[,] GetHeightMap()
     {
@@ -482,6 +501,29 @@ public class CustomTerrain : MonoBehaviour
         splatHeights = keptSplatHeights;
     }
 
+    public void AddNewVegetation()
+    {
+        vegetation.Add(new Vegetation());
+    }
+
+    public void RemoveVegetation()
+    {
+        List<Vegetation> keptVegetation = new List<Vegetation>();
+        for (int i = 0; i < vegetation.Count; i++)
+        {
+            if (!vegetation[i].remove)
+            {
+                keptVegetation.Add(vegetation[i]);
+            }
+
+        }
+        if (keptVegetation.Count == 0)
+        {
+            keptVegetation.Add(vegetation[0]);
+        }
+        vegetation = keptVegetation;
+    }
+
     public void LoadTexture()
     {
         float[,] heightMap;
@@ -526,6 +568,7 @@ public class CustomTerrain : MonoBehaviour
 
         terrainData.SetHeights(0, 0, heightMap);
     }
+
 
     private void OnEnable()
     {
