@@ -332,7 +332,7 @@ MonoBehaviour:
   voronoiType: 1
   roughness: 2
   heightDampenerPower: 2.01
-  smoothAmount: 50
+  smoothAmount: 200
   perlinParameters:
   - mPerlinXScale: 0.006
     mPerlinYScale: 0.006
@@ -371,20 +371,36 @@ MonoBehaviour:
     minHeight: 0
     maxHeight: 1
     remove: 0
-  maxTrees: 2268
-  treeSpacing: 20
+  maxTrees: 20000
+  treeSpacing: 6
   vegetation:
   - mesh: {fileID: 100000, guid: 02e48269f8d554fbca75435761452392, type: 3}
     minHeight: 0
-    maxHeight: 0.3
+    maxHeight: 0.2
     minSlope: 0
     maxSlope: 20
+    minScale: 0.5
+    maxScale: 1
+    colour1: {r: 0.9801369, g: 1, b: 0.025157154, a: 1}
+    colour2: {r: 0.7264151, g: 0, b: 0, a: 1}
+    lightmapColour: {r: 0, g: 0.9622642, b: 0.06662405, a: 1}
+    minRotation: 0
+    maxRotation: 360
+    density: 1
     remove: 0
   - mesh: {fileID: -927199367670048503, guid: 8c7d35afbd119bca11002b7b44295342, type: 3}
-    minHeight: 0.2
+    minHeight: 0
     maxHeight: 1
     minSlope: 0
-    maxSlope: 20
+    maxSlope: 2
+    minScale: 0.5
+    maxScale: 1
+    colour1: {r: 0.9391892, g: 1, b: 0, a: 1}
+    colour2: {r: 0.8980392, g: 0.1703862, b: 0, a: 1}
+    lightmapColour: {r: 0.89230394, g: 1, b: 0, a: 1}
+    minRotation: 0
+    maxRotation: 360
+    density: 1
     remove: 0
 --- !u!1 &705507993
 GameObject:

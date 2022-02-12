@@ -231,7 +231,7 @@ public class CustomTerrainEditor : Editor
         {
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Label("Smooth Terrain", EditorStyles.boldLabel);
-            EditorGUILayout.IntSlider(smoothAmount, 1, 50, new GUIContent("Smooth Terrain"));
+            EditorGUILayout.IntSlider(smoothAmount, 1, 200, new GUIContent("Smooth Terrain"));
 
             if (GUILayout.Button("Smooth Terrian"))
             {
@@ -280,7 +280,7 @@ public class CustomTerrainEditor : Editor
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
             GUILayout.Label("Vegetation", EditorStyles.boldLabel);
 
-            EditorGUILayout.IntSlider(maxTrees, 1, 5000, new GUIContent("Maximum Trees"));
+            EditorGUILayout.IntSlider(maxTrees, 1, 20000, new GUIContent("Maximum Trees"));
             EditorGUILayout.IntSlider(treeSpacing, 1, 20, new GUIContent("Tree Spacing"));
 
             vegetationTable = GUITableLayout.DrawTable(vegetationTable, serializedObject.FindProperty("vegetation"));
