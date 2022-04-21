@@ -135,12 +135,7 @@ public class CustomTerrain : MonoBehaviour
 
         int cornerX, cornerY;
         int midX, midY;
-        int pmidXL, pmidXR, pmidYU, pmidYD;
-
-        //heightMap[0, 0] = UnityEngine.Random.Range(0f, 0.2f);
-        //heightMap[0, terrainData.heightmapResolution - 2] = UnityEngine.Random.Range(0f, 0.2f);
-        //heightMap[terrainData.heightmapResolution - 2, 0] = UnityEngine.Random.Range(0f, 0.2f);
-        //heightMap[terrainData.heightmapResolution - 2, terrainData.heightmapResolution - 2] = UnityEngine.Random.Range(0f, 0.2f);
+        int pmidXL, pmidXR, pmidYU, pmidYD;    
 
         while (squareSize > 0)
         {
@@ -330,19 +325,12 @@ public class CustomTerrain : MonoBehaviour
                         {
                             h = peak.y - Mathf.Pow(distanceToPeak * 3, fallOff) - Mathf.Sin(distanceToPeak * 2 * Mathf.PI) / dropOff;
                         }
-
-
-
                         if (heightMap[x, y] < h)
                             heightMap[x, y] = h;
                     }
                 }
             }
         }
-
-
-
-
         terrainData.SetHeights(0, 0, heightMap);
     }
 
